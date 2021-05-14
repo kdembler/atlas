@@ -1,13 +1,15 @@
 import { useVideos } from '@/api/hooks'
-import { useState } from 'react'
 import { useJoystream, useAuthorizedUser, useTransactionManager } from '@/hooks'
 import { removeVideoFromCache } from '@/utils/cachingAssets'
+import { useDialog } from './useDialog'
+
+const DELETE_DIALOG = 'DELETE_DIALOG'
 
 export const useDeleteVideo = () => {
   const { joystream } = useJoystream()
   const { handleTransaction } = useTransactionManager()
   const { activeMemberId, activeChannelId } = useAuthorizedUser()
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const { closeDialog, openDialog } = useDialog()
 
   const { refetchCount: refetchVideosCount, client } = useVideos({
     where: {
@@ -15,12 +17,26 @@ export const useDeleteVideo = () => {
     },
   })
 
+  const deleteVideo = (videoId: string, onDeleteVideo?: () => void) => {
+    openDialog(DELETE_DIALOG, {
+      title: 'Delete this video?',
+      exitButton: false,
+      description:
+        'You will not be able to undo this. Deletion requires a blockchain transaction to complete. Currently there is no way to remove uploaded video assets.',
+      onSecondaryButtonClick: () => closeDialog(DELETE_DIALOG),
+      onPrimaryButtonClick: () => confirmDeleteVideo(videoId, () => onDeleteVideo?.()),
+      error: true,
+      variant: 'warning',
+      primaryButtonText: 'Delete video',
+      secondaryButtonText: 'Cancel',
+    })
+  }
+
   const confirmDeleteVideo = async (videoId: string, onTxSync?: () => void) => {
     if (!joystream) {
       return
     }
-
-    setIsDeleteDialogOpen(false)
+    closeDialog(DELETE_DIALOG)
 
     handleTransaction({
       txFactory: (updateStatus) => joystream.deleteVideo(videoId, activeMemberId, updateStatus),
@@ -36,10 +52,5 @@ export const useDeleteVideo = () => {
     })
   }
 
-  return {
-    closeVideoDeleteDialog: () => setIsDeleteDialogOpen(false),
-    openVideoDeleteDialog: () => setIsDeleteDialogOpen(true),
-    confirmDeleteVideo,
-    isDeleteDialogOpen,
-  }
+  return deleteVideo
 }
