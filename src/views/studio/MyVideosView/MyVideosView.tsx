@@ -43,7 +43,7 @@ export const MyVideosView = () => {
     },
     { notifyOnNetworkStatusChange: true }
   )
-  const { openDialog, closeDialog } = useDialog()
+  const { openDialog } = useDialog()
   const deleteVideo = useDeleteVideo()
 
   useEffect(() => {
@@ -137,9 +137,7 @@ export const MyVideosView = () => {
           title: 'Draft deleted',
           iconType: 'success',
         })
-        closeDialog(DELETE_DRAFT_DIALOG)
       },
-      onSecondaryButtonClick: () => closeDialog(DELETE_DRAFT_DIALOG),
     })
   }
 

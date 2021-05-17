@@ -45,7 +45,6 @@ export const EditVideoSheet: React.FC = () => {
   const isEdit = !selectedVideoTab?.isDraft
   const { containerRef, drawerOverlayAnimationProps, sheetAnimationProps } = useEditVideoSheetAnimations(sheetState)
 
-  const { openDialog, closeDialog } = useDialog()
   const { openWarningDialog } = useDisplayDataLostWarning()
   const { removeDraft } = useDrafts('video', activeChannelId)
 

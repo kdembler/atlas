@@ -9,7 +9,7 @@ export const useDeleteVideo = () => {
   const { joystream } = useJoystream()
   const { handleTransaction } = useTransactionManager()
   const { activeMemberId, activeChannelId } = useAuthorizedUser()
-  const { closeDialog, openDialog } = useDialog()
+  const { openDialog } = useDialog()
 
   const { refetchCount: refetchVideosCount, client } = useVideos({
     where: {
@@ -23,7 +23,6 @@ export const useDeleteVideo = () => {
       exitButton: false,
       description:
         'You will not be able to undo this. Deletion requires a blockchain transaction to complete. Currently there is no way to remove uploaded video assets.',
-      onSecondaryButtonClick: () => closeDialog(DELETE_DIALOG),
       onPrimaryButtonClick: () => confirmDeleteVideo(videoId, () => onDeleteVideo?.()),
       error: true,
       variant: 'warning',
@@ -36,7 +35,6 @@ export const useDeleteVideo = () => {
     if (!joystream) {
       return
     }
-    closeDialog(DELETE_DIALOG)
 
     handleTransaction({
       txFactory: (updateStatus) => joystream.deleteVideo(videoId, activeMemberId, updateStatus),
