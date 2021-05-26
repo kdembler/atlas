@@ -46,8 +46,8 @@ export const StyledStepsInfoContainer = styled.div`
   display: grid;
 
   ${media.small} {
-    /* 5 = 3 steps + 2 visible chevrons  */
-    grid-template-columns: repeat(5, auto);
+    width: 100%;
+    grid-template-columns: repeat(6, auto);
     align-items: center;
     grid-column-gap: ${sizes(4)};
   }
