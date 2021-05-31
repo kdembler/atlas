@@ -3,14 +3,12 @@ import {
   useEditVideoSheet,
   useAuthorizedUser,
   useUploadsManager,
-  useSnackbar,
   useJoystream,
   EditVideoFormFields,
   EditVideoSheetTab,
   useDrafts,
   useDisplayDataLostWarning,
   useTransactionManager,
-  useDialog,
 } from '@/hooks'
 import { Container, DrawerOverlay } from './EditVideoSheet.style'
 import { useEditVideoSheetAnimations } from './animations'
@@ -50,7 +48,6 @@ export const EditVideoSheet: React.FC = () => {
 
   // transaction management
   const { getRandomStorageProviderUrl } = useRandomStorageProviderUrl()
-  const { displaySnackbar } = useSnackbar()
   const [thumbnailHashPromise, setThumbnailHashPromise] = useState<Promise<string> | null>(null)
   const [videoHashPromise, setVideoHashPromise] = useState<Promise<string> | null>(null)
   const { startFileUpload } = useUploadsManager(activeChannelId)

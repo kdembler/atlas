@@ -12,7 +12,6 @@ import { PaginationContainer, StyledDismissibleMessage, TabsContainer, ViewConta
 const TABS = ['All Videos', 'Public', 'Drafts', 'Unlisted'] as const
 const INITIAL_VIDEOS_PER_ROW = 4
 const ROWS_AMOUNT = 4
-const DELETE_DRAFT_DIALOG = 'DELETE_DRAFT_DIALOG'
 
 export const MyVideosView = () => {
   const navigate = useNavigate()
@@ -21,7 +20,6 @@ export const MyVideosView = () => {
   const [videosPerRow, setVideosPerRow] = useState(INITIAL_VIDEOS_PER_ROW)
   const [tabIdToRemoveViaSnackbar, setTabIdToRemoveViaSnackbar] = useState<string>()
   const videosPerPage = ROWS_AMOUNT * videosPerRow
-  const [selectedVideoId, setSelectedVideoId] = useState<string | undefined>()
 
   const [currentVideosTab, setCurrentVideosTab] = useState(0)
   const currentTabName = TABS[currentVideosTab]
@@ -43,7 +41,7 @@ export const MyVideosView = () => {
     },
     { notifyOnNetworkStatusChange: true }
   )
-  const { openDialog } = useDialog()
+  const [openDeleteDraftDialog, closeDeleteDraftDialog] = useDialog()
   const deleteVideo = useDeleteVideo()
 
   useEffect(() => {
@@ -124,14 +122,21 @@ export const MyVideosView = () => {
   }, [removeVideoTab, tabIdToRemoveViaSnackbar, videoTabs])
 
   const handleDeleteDraft = (draftId: string) => {
-    openDialog(DELETE_DRAFT_DIALOG, {
+    openDeleteDraftDialog({
       title: 'Delete this draft?',
       description: 'You will not be able to undo this.',
       variant: 'warning',
       error: true,
       primaryButtonText: 'Remove draft',
       secondaryButtonText: 'Cancel',
+      onExitClick: () => {
+        closeDeleteDraftDialog()
+      },
+      onSecondaryButtonClick: () => {
+        closeDeleteDraftDialog()
+      },
       onPrimaryButtonClick: () => {
+        closeDeleteDraftDialog()
         removeDraft(draftId)
         displaySnackbar({
           title: 'Draft deleted',
