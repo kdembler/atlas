@@ -1,17 +1,18 @@
+import { isEqual } from 'lodash'
 import { useEffect, useState } from 'react'
 
 import { useStorageProviders } from '@/providers'
 import { Logger } from '@/utils/logger'
 
 import { getAssetUrl, readAssetData, testAssetDownload } from './helpers'
-import { UseAsset } from './types'
+import { UseAsset, UseAssetDataArgs } from './types'
 
 export const useAsset: UseAsset = ({ entity, assetType }, opts = {}) => {
   const { getStorageProvider } = useStorageProviders()
   const [error, setError] = useState<ErrorEvent | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [url, setUrl] = useState<string | undefined>(undefined)
-  const [cachedEntityId, setCachedEntityId] = useState<string | null>()
+  const [cachedEntity, setCachedEntity] = useState<UseAssetDataArgs['entity']>(null)
 
   useEffect(() => {
     if (error) {
@@ -20,11 +21,11 @@ export const useAsset: UseAsset = ({ entity, assetType }, opts = {}) => {
   }, [error, assetType])
 
   useEffect(() => {
-    if (!entity || entity.id === cachedEntityId || opts.skip) {
+    if (!entity || isEqual(entity, cachedEntity) || opts.skip) {
       // only run if entity changed
       return
     }
-    setCachedEntityId(entity.id)
+    setCachedEntity(entity)
     setUrl(undefined)
     setIsLoading(true)
 
@@ -57,7 +58,7 @@ export const useAsset: UseAsset = ({ entity, assetType }, opts = {}) => {
     }
 
     testAsset()
-  }, [assetType, cachedEntityId, entity, getStorageProvider, opts.skip])
+  }, [assetType, cachedEntity, entity, getStorageProvider, opts.skip])
 
-  return { url: entity?.id === cachedEntityId ? url : undefined, error, isLoading }
+  return { url: isEqual(entity, cachedEntity) ? url : undefined, error, isLoading }
 }
